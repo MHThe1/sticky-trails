@@ -1,20 +1,43 @@
 import mongoose from "mongoose";
 
-const noteSchema = new mongoose.Schema({
+const noteSchema = new mongoose.Schema(
+  {
     title: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
     content: {
-        type: String,
-        required: true
+      type: String,
+      required: true,
     },
-    bgimage: {
-        type: String,
-        required: false
+    color: {
+      type: String,
+      required: true,
     },
-}, {
-    timestamps: true // add createdAt and updatedAt fields
+    priority: {
+      type: Number,
+      required: true,
+      default: 0, // Temporary default, will be overridden in the middleware
+    },
+  },
+  {
+    timestamps: true, // adds createdAt and updatedAt fields
+  }
+);
+
+// Pre-validate middleware to calculate priority
+noteSchema.pre("validate", async function (next) {
+  if (this.isNew && this.priority === 0) { // Only run for new documents with unset priority
+    try {
+      const noteCount = await mongoose.model("Note").countDocuments();
+      this.priority = 100 + noteCount;
+      next();
+    } catch (error) {
+      next(error);
+    }
+  } else {
+    next();
+  }
 });
 
 const Note = mongoose.model("Note", noteSchema);
