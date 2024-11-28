@@ -111,6 +111,7 @@ export const HomePage: React.FC = () => {
         onLayoutChange={handleLayoutChange}
         isDraggable={true}
         isResizable={false}
+        draggableCancel=".drag-handle"
       >
         {notes.map((note) => (
           <div key={note._id}>

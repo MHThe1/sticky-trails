@@ -12,6 +12,8 @@ import {
   Edit,
   Trash,
 } from "lucide-react";
+import { EditNote } from "./EditNote";
+import { DeleteConfirmation } from "./DeleteConfirmation";
 
 interface Note {
   _id: string;
@@ -46,6 +48,7 @@ export const NoteCard: React.FC<NoteCardProps> = ({
   onDelete,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
   const {
     bg,
     text,
@@ -77,56 +80,81 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     setIsEditing(false);
   };
 
+  const handleDelete = () => {
+    onDelete(note._id);
+    setIsDeleting(false);
+  };
+
   return (
     <>
       <motion.div
-        className={`${bg} p-6 rounded-lg shadow-lg w-full h-full cursor-move overflow-hidden relative group`}
+        className={`${bg} p-6 rounded-lg shadow-lg w-full h-full overflow-hidden relative group`}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <div className="flex items-center justify-between mb-4">
-          <h3 className={`text-xl font-bold truncate ${text}`}>{note.title}</h3>
-          <Icon className={`w-6 h-6 ${text}`} />
+        <div className="absolute top-0 left-0 right-0 h-6 cursor-move" />
+        <div className="pointer-events-none">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className={`text-xl font-bold truncate ${text}`}>{note.title}</h3>
+            <Icon className={`w-6 h-6 ${text}`} />
+          </div>
+          <p className={`${text} opacity-80 overflow-hidden h-32 text-sm`}>
+            {note.content}
+          </p>
+          <div
+            className={`mt-4 text-xs ${text} opacity-60 flex items-center justify-between`}
+          >
+            <span className="flex items-center">
+              <Clock className="w-4 h-4 mr-1" />
+              {formatDate(note.updatedAt)}
+            </span>
+            <span className="flex items-center">
+              <Icon className="w-4 h-4 mr-1" />
+              {note.color.charAt(0).toUpperCase() + note.color.slice(1)}
+            </span>
+          </div>
         </div>
-        <p className={`${text} opacity-80 overflow-hidden h-32 text-sm`}>
-          {note.content}
-        </p>
-        <div
-          className={`mt-4 text-xs ${text} opacity-60 flex items-center justify-between`}
-        >
-          <span className="flex items-center">
-            <Clock className="w-4 h-4 mr-1" />
-            {formatDate(note.updatedAt)}
-          </span>
-          <span className="flex items-center">
-            <Icon className="w-4 h-4 mr-1" />
-            {note.color.charAt(0).toUpperCase() + note.color.slice(1)}
-          </span>
-        </div>
-        <div className="absolute left-0 right-0 bottom-6 flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <div className="drag-handle absolute left-0 right-0 bottom-6 flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto">
           <button
-            onClick={() => setIsEditing(true)}
-            className={`p-2 ${text} bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsEditing(true);
+            }}
+            className={`p-2 text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200`}
           >
             <Edit size={24} />
           </button>
           <button
-            onClick={() => onDelete(note._id)}
-            className={`p-2 ${text} bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-200`}
+            onClick={(e) => {
+              e.stopPropagation();
+              setIsDeleting(true);
+            }}
+            className={`p-2 text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-200`}
           >
             <Trash size={24} />
           </button>
         </div>
       </motion.div>
-      {/* {isEditing && (
+      <div className="drag-handle">
+      {isEditing && (
         <EditNote
           note={note}
           onEdit={handleEdit}
           onClose={() => setIsEditing(false)}
         />
-      )} */}
+      )}
+      {isDeleting && (
+        <DeleteConfirmation
+          noteTitle={note.title}
+          color={note.color}
+          onConfirm={handleDelete}
+          onCancel={() => setIsDeleting(false)}
+        />
+      )}
+      </div>
     </>
   );
 };
+
