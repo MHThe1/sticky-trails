@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Responsive, WidthProvider } from "react-grid-layout";
 import { NoteCard } from "../components/NoteCard";
 import { AddNoteWindow } from "../components/AddNoteWindow";
 import axios from "axios";
-import "react-grid-layout/css/styles.css";
-import "react-resizable/css/styles.css";
-
-const ResponsiveGridLayout = WidthProvider(Responsive);
+import {
+  GridContextProvider,
+  GridDropZone,
+  GridItem,
+  swap,
+} from "react-grid-dnd";
 
 interface Note {
   _id: string;
@@ -36,7 +37,11 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const addNote = async (newNote: { title: string; content: string; color: string }) => {
+  const addNote = async (newNote: {
+    title: string;
+    content: string;
+    color: string;
+  }) => {
     try {
       const response = await axios.post<{ data: Note }>("/api/notes", newNote);
       setNotes((prevNotes) => [...prevNotes, response.data.data]);
@@ -47,7 +52,10 @@ export const HomePage: React.FC = () => {
 
   const editNote = async (id: string, updates: Partial<Note>) => {
     try {
-      const response = await axios.put<{ data: Note }>(`/api/notes/${id}`, updates);
+      const response = await axios.put<{ data: Note }>(
+        `/api/notes/${id}`,
+        updates
+      );
       setNotes((prevNotes) =>
         prevNotes.map((note) => (note._id === id ? response.data.data : note))
       );
@@ -65,11 +73,11 @@ export const HomePage: React.FC = () => {
     }
   };
 
-  const updateNotePriorities = async (newLayout: any[]) => {
-    const updatedNotes = notes.map((note) => {
-      const layoutItem = newLayout.find((item) => item.i === note._id);
-      return { ...note, priority: layoutItem ? layoutItem.y * 4 + layoutItem.x : note.priority };
-    });
+  const updateNotePriorities = async (newNotes: Note[]) => {
+    const updatedNotes = newNotes.map((note, index) => ({
+      ...note,
+      priority: index,
+    }));
 
     try {
       await Promise.all(
@@ -77,14 +85,10 @@ export const HomePage: React.FC = () => {
           axios.put(`/api/notes/${note._id}`, { priority: note.priority })
         )
       );
-      setNotes(updatedNotes.sort((a, b) => a.priority - b.priority));
+      setNotes(updatedNotes);
     } catch (error) {
       console.error("Error updating note priorities:", error);
     }
-  };
-
-  const handleLayoutChange = (newLayout: any[]) => {
-    updateNotePriorities(newLayout);
   };
 
   if (loading) {
@@ -95,30 +99,38 @@ export const HomePage: React.FC = () => {
     );
   }
 
+  function onChange(
+    sourceId: string,
+    sourceIndex: number,
+    targetIndex: number
+  ) {
+    const nextState = swap(notes, sourceIndex, targetIndex);
+    setNotes(nextState);
+    updateNotePriorities(nextState);
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-600 p-8">
       <h1 className="text-5xl font-bold mb-8 text-center text-white">
         My Sticky Trail
       </h1>
-      <ResponsiveGridLayout
-        className="layout"
-        layouts={{ lg: notes.map((note, i) => ({ i: note._id, x: i % 4, y: Math.floor(i / 4), w: 1, h: 1 })) }}
-        breakpoints={{ lg: 1200, md: 996, sm: 768, xs: 480, xxs: 0 }}
-        cols={{ lg: 4, md: 3, sm: 2, xs: 1, xxs: 1 }}
-        rowHeight={250}
-        width={1100}
-        margin={[20, 20]}
-        onLayoutChange={handleLayoutChange}
-        isDraggable={true}
-        isResizable={false}
-        draggableCancel=".drag-handle"
-      >
-        {notes.map((note) => (
-          <div key={note._id}>
-            <NoteCard note={note} onEdit={editNote} onDelete={deleteNote} />
-          </div>
-        ))}
-      </ResponsiveGridLayout>
+      <GridContextProvider onChange={onChange}>
+        <GridDropZone
+          id="notes"
+          boxesPerRow={4}
+          rowHeight={280}
+          style={{ height: 280 * Math.ceil(notes.length / 4) }}
+        >
+          {notes.map((note) => (
+            <GridItem key={note._id}>
+              <div>
+                <NoteCard note={note} onEdit={editNote} onDelete={deleteNote} />
+              </div>
+            </GridItem>
+          ))}
+        </GridDropZone>
+      </GridContextProvider>
+
       <AddNoteWindow onAddNote={addNote} />
     </div>
   );
