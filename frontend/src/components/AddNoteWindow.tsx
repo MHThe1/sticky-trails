@@ -1,34 +1,47 @@
-import React, { useState } from 'react';
-import { Plus } from 'lucide-react';
-import { motion } from 'framer-motion';
+import React, { useState } from "react";
+import { Plus } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface AddNoteWindowProps {
   onAddNote: (note: { title: string; content: string; color: string }) => void;
 }
 
-const colorConfig: Record<string, { bg: string; inpbg: string; text: string }> = {
-  yellow: { bg: "bg-yellow-400", inpbg: "bg-yellow-300", text: "text-gray-900" },
-  green: { bg: "bg-green-400", inpbg: "bg-green-300", text: "text-gray-900" },
-  blue: { bg: "bg-blue-400", inpbg: "bg-blue-300", text: "text-gray-100" },
-  pink: { bg: "bg-pink-400", inpbg: "bg-pink-300", text: "text-gray-100" },
-  purple: { bg: "bg-purple-400", inpbg: "bg-purple-300", text: "text-gray-100" },
-  indigo: { bg: "bg-indigo-400", inpbg: "bg-indigo-300", text: "text-gray-100" },
-  red: { bg: "bg-red-400", inpbg: "bg-red-300", text: "text-gray-100" },
-};
+const colorConfig: Record<string, { bg: string; inpbg: string; text: string }> =
+  {
+    yellow: {
+      bg: "bg-yellow-400",
+      inpbg: "bg-yellow-300",
+      text: "text-gray-900",
+    },
+    green: { bg: "bg-green-400", inpbg: "bg-green-300", text: "text-gray-900" },
+    blue: { bg: "bg-blue-400", inpbg: "bg-blue-300", text: "text-gray-100" },
+    pink: { bg: "bg-pink-400", inpbg: "bg-pink-300", text: "text-gray-100" },
+    purple: {
+      bg: "bg-purple-400",
+      inpbg: "bg-purple-300",
+      text: "text-gray-100",
+    },
+    indigo: {
+      bg: "bg-indigo-400",
+      inpbg: "bg-indigo-300",
+      text: "text-gray-100",
+    },
+    red: { bg: "bg-red-400", inpbg: "bg-red-300", text: "text-gray-100" },
+  };
 
 export const AddNoteWindow: React.FC<AddNoteWindowProps> = ({ onAddNote }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [title, setTitle] = useState('');
-  const [content, setContent] = useState('');
-  const [color, setColor] = useState('yellow');
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [color, setColor] = useState("yellow");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     onAddNote({ title, content, color });
     setIsModalOpen(false);
-    setTitle('');
-    setContent('');
-    setColor('yellow');
+    setTitle("");
+    setContent("");
+    setColor("yellow");
   };
 
   const { bg, inpbg, text } = colorConfig[color];
@@ -72,19 +85,23 @@ export const AddNoteWindow: React.FC<AddNoteWindowProps> = ({ onAddNote }) => {
                 className={`w-full p-2 mb-4 border rounded ${inpbg} ${text} placeholder-gray-600 h-32`}
                 required
               />
-              <select
-                value={color}
-                onChange={(e) => setColor(e.target.value)}
-                className={`w-full p-2 mb-4 border rounded ${inpbg} ${text}`}
-              >
-                <option value="yellow">Yellow</option>
-                <option value="red">Red</option>
-                <option value="green">Green</option>
-                <option value="blue">Blue</option>
-                <option value="pink">Pink</option>
-                <option value="purple">Purple</option>
-                <option value="indigo">Indigo</option>
-              </select>
+              <div className="flex space-x-2 pb-4">
+                {Object.keys(colorConfig).map((colorKey) => {
+                  const { bg: circleBg } = colorConfig[colorKey];
+                  return (
+                    <button
+                      key={colorKey}
+                      type="button"
+                      onClick={() => setColor(colorKey)}
+                      className={`w-8 h-8 rounded-full ${circleBg} border-2 ${
+                        color === colorKey
+                          ? "border-indigo-900"
+                          : "border-gray-50"
+                      }`} // Added a more visible stroke
+                    />
+                  );
+                })}
+              </div>
               <div className="flex justify-end">
                 <button
                   type="button"

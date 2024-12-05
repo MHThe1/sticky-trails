@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
 import {
-  type LucideIcon,
+  LucideIcon,
   AlertCircle,
   Book,
   Briefcase,
@@ -20,13 +20,14 @@ interface Note {
   title: string;
   content: string;
   color: string;
-  updatedAt: string;
+  createdAt: string;
 }
 
 interface NoteCardProps {
   note: Note;
   onEdit: (id: string, updates: Partial<Note>) => void;
   onDelete: (id: string) => void;
+  isListView?: boolean;
 }
 
 const colorConfig: Record<
@@ -46,31 +47,49 @@ export const NoteCard: React.FC<NoteCardProps> = ({
   note,
   onEdit,
   onDelete,
+  isListView = false,
 }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [formattedTime, setFormattedTime] = useState("");
+
   const {
     bg,
     text,
     icon: Icon,
   } = colorConfig[note.color] || colorConfig.yellow;
 
-  const formatDate = (dateString: string) => {
-    const date = new Date(dateString);
+  // Format the time dynamically
+  const updateFormattedTime = () => {
     const now = new Date();
-    const diffTime = Math.abs(now.getTime() - date.getTime());
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const date = new Date(note.createdAt);
+    const diffMs = now.getTime() - date.getTime();
 
-    if (diffDays === 0) {
-      return "Today";
-    } else if (diffDays === 1) {
-      return "Yesterday";
-    } else if (diffDays < 7) {
-      return `${diffDays} days ago`;
+    const diffSeconds = Math.floor(diffMs / 1000);
+    const diffMinutes = Math.floor(diffSeconds / 60);
+    const diffHours = Math.floor(diffMinutes / 60);
+    const diffDays = Math.floor(diffHours / 24);
+
+    if (diffSeconds < 60) {
+      setFormattedTime(`${diffSeconds} second${diffSeconds > 1 ? "s" : ""} ago`);
+    } else if (diffMinutes < 60) {
+      setFormattedTime(`${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`);
+    } else if (diffHours < 24) {
+      setFormattedTime(`${diffHours} hour${diffHours > 1 ? "s" : ""} ago`);
+    } else if (diffDays < 31) {
+      setFormattedTime(`${diffDays} day${diffDays > 1 ? "s" : ""} ago`);
     } else {
-      return date.toLocaleDateString();
+      setFormattedTime(date.toLocaleDateString());
     }
   };
+
+  // Update the time difference every second
+  useEffect(() => {
+    updateFormattedTime(); // Initial update
+    const interval = setInterval(updateFormattedTime, 1000);
+
+    return () => clearInterval(interval); // Cleanup on unmount
+  }, [note.createdAt]);
 
   const handleEdit = (
     id: string,
@@ -88,27 +107,39 @@ export const NoteCard: React.FC<NoteCardProps> = ({
   return (
     <>
       <motion.div
-        className={`${bg} p-6 rounded-lg shadow-lg w-full h-full overflow-hidden relative group`}
+        className={`${bg} ${
+          isListView ? "p-4" : "p-6"
+        } rounded-lg shadow-lg w-full h-full overflow-hidden relative group`}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
         <div className="absolute top-0 left-0 right-0 h-6 cursor-move" />
-        <div className="pointer-events-none">
-          <div className="flex items-center justify-between mb-4">
+        <div className={`pointer-events-none ${isListView ? "flex items-center" : ""}`}>
+          <div
+            className={`flex items-center justify-between ${
+              isListView ? "w-1/4" : "mb-4"
+            }`}
+          >
             <h3 className={`text-xl font-bold truncate ${text}`}>{note.title}</h3>
             <Icon className={`w-6 h-6 ${text}`} />
           </div>
-          <p className={`${text} opacity-80 overflow-hidden h-32 text-sm`}>
+          <p
+            className={`${text} opacity-80 overflow-hidden ${
+              isListView ? "w-1/2 mx-4" : "h-32"
+            } text-sm`}
+          >
             {note.content}
           </p>
           <div
-            className={`mt-4 text-xs ${text} opacity-60 flex items-center justify-between`}
+            className={`${
+              isListView ? "w-1/4 text-right" : "mt-4"
+            } text-xs ${text} opacity-60 flex items-center justify-between`}
           >
             <span className="flex items-center">
               <Clock className="w-4 h-4 mr-1" />
-              {formatDate(note.updatedAt)}
+              {formattedTime}
             </span>
             <span className="flex items-center">
               <Icon className="w-4 h-4 mr-1" />
@@ -116,7 +147,13 @@ export const NoteCard: React.FC<NoteCardProps> = ({
             </span>
           </div>
         </div>
-        <div className="drag-handle absolute left-0 right-0 bottom-6 flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto">
+        <div
+          className={`drag-handle absolute ${
+            isListView
+              ? "right-4 top-1/2 transform -translate-y-1/2"
+              : "left-0 right-0 bottom-6"
+          } flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto`}
+        >
           <button
             onClick={(e) => {
               e.stopPropagation();
@@ -138,23 +175,22 @@ export const NoteCard: React.FC<NoteCardProps> = ({
         </div>
       </motion.div>
       <div className="drag-handle">
-      {isEditing && (
-        <EditNote
-          note={note}
-          onEdit={handleEdit}
-          onClose={() => setIsEditing(false)}
-        />
-      )}
-      {isDeleting && (
-        <DeleteConfirmation
-          noteTitle={note.title}
-          color={note.color}
-          onConfirm={handleDelete}
-          onCancel={() => setIsDeleting(false)}
-        />
-      )}
+        {isEditing && (
+          <EditNote
+            note={note}
+            onEdit={handleEdit}
+            onClose={() => setIsEditing(false)}
+          />
+        )}
+        {isDeleting && (
+          <DeleteConfirmation
+            noteTitle={note.title}
+            color={note.color}
+            onConfirm={handleDelete}
+            onCancel={() => setIsDeleting(false)}
+          />
+        )}
       </div>
     </>
   );
 };
-
