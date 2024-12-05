@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { NoteCard } from "../components/NoteCard";
 import { AddNoteWindow } from "../components/AddNoteWindow";
+import { Navbar } from "../components/Navbar";
 import axios from "axios";
 import {
   GridContextProvider,
@@ -110,28 +111,32 @@ export const HomePage: React.FC = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-600 p-8">
-      <h1 className="text-5xl font-bold mb-8 text-center text-white">
-        My Sticky Trail
-      </h1>
-      <GridContextProvider onChange={onChange}>
-        <GridDropZone
-          id="notes"
-          boxesPerRow={4}
-          rowHeight={280}
-          style={{ height: 280 * Math.ceil(notes.length / 4) }}
-        >
-          {notes.map((note) => (
-            <GridItem key={note._id}>
-              <div>
-                <NoteCard note={note} onEdit={editNote} onDelete={deleteNote} />
-              </div>
-            </GridItem>
-          ))}
-        </GridDropZone>
-      </GridContextProvider>
+    <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-600">
+      <Navbar />
+      <div className="container mx-auto px-4 py-8">
+        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center text-white">
+          My Sticky Trail
+        </h1>
+        <GridContextProvider onChange={onChange}>
+          <GridDropZone
+            id="notes"
+            boxesPerRow={4}
+            rowHeight={280}
+            style={{ height: `${280 * Math.ceil(notes.length / 4)}px` }}
+            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+          >
+            {notes.map((note) => (
+              <GridItem key={note._id}>
+                <div className="h-full">
+                  <NoteCard note={note} onEdit={editNote} onDelete={deleteNote} />
+                </div>
+              </GridItem>
+            ))}
+          </GridDropZone>
+        </GridContextProvider>
 
-      <AddNoteWindow onAddNote={addNote} />
+        <AddNoteWindow onAddNote={addNote} />
+      </div>
     </div>
   );
 };
