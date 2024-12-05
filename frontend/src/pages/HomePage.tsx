@@ -16,15 +16,33 @@ interface Note {
   content: string;
   color: string;
   priority: number;
-  updatedAt: string;
+  createdAt: string;
 }
 
 export const HomePage: React.FC = () => {
   const [notes, setNotes] = useState<Note[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
+  const [isGridView, setIsGridView] = useState<boolean>(true);
+  const [boxesPerRow, setBoxesPerRow] = useState<number>(4);
 
   useEffect(() => {
     fetchNotes();
+    const updateGridView = () => {
+      if (window.innerWidth < 640) {
+        setBoxesPerRow(1);
+      } else if (window.innerWidth < 1024) {
+        setBoxesPerRow(2);
+      } else {
+        setBoxesPerRow(4);
+      }
+    };
+
+    updateGridView();
+    window.addEventListener("resize", updateGridView);
+
+    return () => {
+      window.removeEventListener("resize", updateGridView);
+    };
   }, []);
 
   const fetchNotes = async () => {
@@ -53,10 +71,7 @@ export const HomePage: React.FC = () => {
 
   const editNote = async (id: string, updates: Partial<Note>) => {
     try {
-      const response = await axios.put<{ data: Note }>(
-        `/api/notes/${id}`,
-        updates
-      );
+      const response = await axios.put<{ data: Note }>(`/api/notes/${id}`, updates);
       setNotes((prevNotes) =>
         prevNotes.map((note) => (note._id === id ? response.data.data : note))
       );
@@ -112,23 +127,26 @@ export const HomePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-900 via-purple-900 to-violet-600">
-      <Navbar />
-      <div className="container mx-auto px-4 py-8">
-        <h1 className="text-4xl md:text-5xl font-bold mb-8 text-center text-white">
-          My Sticky Trail
-        </h1>
+      <Navbar isGridView={isGridView} setIsGridView={setIsGridView} />
+      <div className="mx-auto px-4 py-8">
         <GridContextProvider onChange={onChange}>
           <GridDropZone
             id="notes"
-            boxesPerRow={4}
-            rowHeight={280}
-            style={{ height: `${280 * Math.ceil(notes.length / 4)}px` }}
-            className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4"
+            boxesPerRow={isGridView ? boxesPerRow : 1}
+            rowHeight={isGridView ? 280 : 100}
+            style={{
+              height: `${(isGridView ? 280 : 100) * Math.ceil(notes.length / boxesPerRow)}px`,
+            }}
           >
             {notes.map((note) => (
               <GridItem key={note._id}>
-                <div className="h-full">
-                  <NoteCard note={note} onEdit={editNote} onDelete={deleteNote} />
+                <div className={`h-full p-4 ${!isGridView && "flex"}`}>
+                  <NoteCard
+                    note={note}
+                    onEdit={editNote}
+                    onDelete={deleteNote}
+                    isListView={!isGridView}
+                  />
                 </div>
               </GridItem>
             ))}
@@ -140,4 +158,3 @@ export const HomePage: React.FC = () => {
     </div>
   );
 };
-

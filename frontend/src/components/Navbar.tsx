@@ -1,8 +1,13 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { UserCircle, Search, X } from 'lucide-react';
+import { UserCircle, Search, X, Grid, List } from 'lucide-react';
 
-export const Navbar: React.FC = () => {
+interface NavbarProps {
+  isGridView: boolean;
+  setIsGridView: (isGrid: boolean) => void;
+}
+
+export const Navbar: React.FC<NavbarProps> = ({ isGridView, setIsGridView }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
 
   return (
@@ -40,8 +45,23 @@ export const Navbar: React.FC = () => {
           <Link to="/profile" className="hover:text-violet-400 transition-colors">
             <UserCircle className="w-6 h-6" />
           </Link>
+          <div className="flex space-x-2">
+            <button
+              onClick={() => setIsGridView(true)}
+              className={`p-2 rounded ${isGridView ? 'bg-violet-500 text-white' : 'bg-gray-700 text-gray-300'}`}
+            >
+              <Grid size={20} />
+            </button>
+            <button
+              onClick={() => setIsGridView(false)}
+              className={`p-2 rounded ${!isGridView ? 'bg-violet-500 text-white' : 'bg-gray-700 text-gray-300'}`}
+            >
+              <List size={20} />
+            </button>
+          </div>
         </div>
       </div>
     </nav>
   );
 };
+
