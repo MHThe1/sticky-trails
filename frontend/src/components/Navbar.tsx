@@ -1,14 +1,26 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import { UserCircle, Search, X, Grid, List } from 'lucide-react';
+import React, { useState } from "react";
+import { Link } from "react-router-dom";
+import { UserCircle, Search, X, Grid, List } from "lucide-react";
+import { useLogout } from "../hooks/useLogout";
+import { useAuthContext } from "../hooks/useAuthContext";
 
 interface NavbarProps {
   isGridView: boolean;
   setIsGridView: (isGrid: boolean) => void;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({ isGridView, setIsGridView }) => {
+export const Navbar: React.FC<NavbarProps> = ({
+  isGridView,
+  setIsGridView,
+}) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+
+  const { logout } = useLogout();
+  const { user } = useAuthContext();
+
+  const handleLogout = () => {
+    logout();
+  };
 
   return (
     <nav className="bg-gray-900 text-white p-4 shadow-lg">
@@ -39,22 +51,57 @@ export const Navbar: React.FC<NavbarProps> = ({ isGridView, setIsGridView }) => 
               <Search size={20} />
             </button>
           )}
-          <Link to="/dashboard" className="hover:text-violet-400 transition-colors">
-            Dashboard
-          </Link>
-          <Link to="/profile" className="hover:text-violet-400 transition-colors">
-            <UserCircle className="w-6 h-6" />
-          </Link>
+
+          {user ? (
+            <>
+              <Link
+                to="/profile"
+                className="hover:text-violet-400 transition-colors"
+              >
+                <UserCircle className="w-6 h-6" />
+              </Link>
+
+              <button
+                onClick={handleLogout}
+                className="hover:text-violet-400 transition-colors"
+              >
+                Logout
+              </button>
+            </>
+          ) : (
+            <>
+              <Link
+                to="/login"
+                className="hover:text-violet-400 transition-colors"
+              >
+                Login
+              </Link>
+              <Link
+                to="/register"
+                className="hover:text-violet-400 transition-colors"
+              >
+                Register
+              </Link>
+            </>
+          )}
           <div className="flex space-x-2">
             <button
               onClick={() => setIsGridView(true)}
-              className={`p-2 rounded ${isGridView ? 'bg-violet-500 text-white' : 'bg-gray-700 text-gray-300'}`}
+              className={`p-2 rounded ${
+                isGridView
+                  ? "bg-violet-500 text-white"
+                  : "bg-gray-700 text-gray-300"
+              }`}
             >
               <Grid size={20} />
             </button>
             <button
               onClick={() => setIsGridView(false)}
-              className={`p-2 rounded ${!isGridView ? 'bg-violet-500 text-white' : 'bg-gray-700 text-gray-300'}`}
+              className={`p-2 rounded ${
+                !isGridView
+                  ? "bg-violet-500 text-white"
+                  : "bg-gray-700 text-gray-300"
+              }`}
             >
               <List size={20} />
             </button>
@@ -64,4 +111,3 @@ export const Navbar: React.FC<NavbarProps> = ({ isGridView, setIsGridView }) => 
     </nav>
   );
 };
-
