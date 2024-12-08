@@ -1,6 +1,17 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import { type LucideIcon, AlertCircle, Book, Briefcase, Calendar, Music, Star, Clock, Edit, Trash } from 'lucide-react';
+import {
+  type LucideIcon,
+  AlertCircle,
+  Book,
+  Briefcase,
+  Calendar,
+  Music,
+  Star,
+  Clock,
+  Edit,
+  Trash,
+} from "lucide-react";
 import { EditNote } from "./EditNote";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 
@@ -60,9 +71,13 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     const diffDays = Math.floor(diffHours / 24);
 
     if (diffSeconds < 60) {
-      setFormattedTime(`${diffSeconds} second${diffSeconds > 1 ? "s" : ""} ago`);
+      setFormattedTime(
+        `${diffSeconds} second${diffSeconds > 1 ? "s" : ""} ago`
+      );
     } else if (diffMinutes < 60) {
-      setFormattedTime(`${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`);
+      setFormattedTime(
+        `${diffMinutes} minute${diffMinutes > 1 ? "s" : ""} ago`
+      );
     } else if (diffHours < 24) {
       setFormattedTime(`${diffHours} hour${diffHours > 1 ? "s" : ""} ago`);
     } else if (diffDays < 31) {
@@ -97,72 +112,103 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     <>
       <motion.div
         className={`${bg} ${
-          isListView ? "p-4" : "p-6"
+          isListView ? "p-4 flex items-center" : "p-6"
         } rounded-lg shadow-lg w-full h-full overflow-hidden relative group`}
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
         transition={{ duration: 0.3 }}
         whileHover={{ scale: 1.02 }}
       >
-        <div className="absolute top-0 left-0 right-0 h-6 cursor-move" />
-        <div className={`pointer-events-none ${isListView ? "flex items-center" : ""}`}>
-          <div
-            className={`flex items-center justify-between ${
-              isListView ? "w-1/4" : "mb-4"
-            }`}
-          >
-            <h3 className={`text-xl font-bold truncate ${text}`}>{note.title}</h3>
-            <Icon className={`w-6 h-6 ${text}`} />
-          </div>
-          <p
-            className={`${text} opacity-80 overflow-hidden ${
-              isListView ? "w-1/2 mx-4" : "h-32"
-            } text-sm`}
-          >
-            {note.content}
-          </p>
-          <div
-            className={`${
-              isListView ? "w-1/4 text-right" : "mt-4"
-            } text-xs ${text} opacity-60 flex items-center justify-between`}
-          >
-            <span className="flex items-center">
-              <Clock className="w-4 h-4 mr-1" />
-              {formattedTime}
-            </span>
-            <span className="flex items-center">
-              <Icon className="w-4 h-4 mr-1" />
-              {note.color.charAt(0).toUpperCase() + note.color.slice(1)}
-            </span>
-          </div>
-        </div>
         <div
-          className={`drag-handle absolute ${
+          className={
             isListView
-              ? "right-4 top-1/2 transform -translate-y-1/2"
-              : "left-0 right-0 bottom-6"
-          } flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto`}
+              ? ""
+              : "absolute top-0 left-0 right-0 h-6 cursor-move"
+          }
+        />
+        <div
+          className={`pointer-events-none ${
+            isListView ? "w-full" : ""
+          }`}
         >
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsEditing(true);
-            }}
-            className={`p-2 text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200`}
-          >
-            <Edit size={24} />
-          </button>
-          <button
-            onClick={(e) => {
-              e.stopPropagation();
-              setIsDeleting(true);
-            }}
-            className={`p-2 text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-200`}
-          >
-            <Trash size={24} />
-          </button>
+          {isListView ? (
+            /* List View Design */
+            <>
+              <div className="flex items-center justify-between">
+                {/* Icon and Title on the Left */}
+                <div className="flex items-center mr-auto">
+                  <Icon className={`w-8 h-8 mr-4 ${text}`} />
+                  <h3 className={`text-lg font-bold truncate ${text}`}>
+                    {note.title}
+                  </h3>
+                </div>
+
+                {/* Time on the Right */}
+                <div
+                  className={`text-xs ${text} opacity-60 flex items-center ml-auto`}
+                >
+                  <Clock className="w-4 h-4 mr-1" />
+                  {formattedTime}
+                </div>
+              </div>
+            </>
+          ) : (
+            /* Grid View Design */
+            <>
+              <div className="absolute top-0 left-0 right-0 h-6 cursor-move" />
+              <div className="mb-4 flex items-center justify-between">
+                <h3 className={`text-xl font-bold truncate ${text}`}>
+                  {note.title}
+                </h3>
+                <Icon className={`w-6 h-6 ${text}`} />
+              </div>
+              <p className={`${text} opacity-80 overflow-hidden h-32 text-sm`}>
+                {note.content}
+              </p>
+              <div
+                className={`mt-4 text-xs ${text} opacity-60 flex items-center justify-between`}
+              >
+                <span className="flex items-center">
+                  <Clock className="w-4 h-4 mr-1" />
+                  {formattedTime}
+                </span>
+                <span className="flex items-center">
+                  <Icon className="w-4 h-4 mr-1" />
+                  {note.color.charAt(0).toUpperCase() + note.color.slice(1)}
+                </span>
+              </div>
+            </>
+          )}
         </div>
+
+        {/* Action buttons */}
+        {!isListView && (
+          <div
+            className={`drag-handle absolute left-0 right-0 bottom-6 flex justify-center space-x-4 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-auto`}
+          >
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsEditing(true);
+              }}
+              className={`p-2 text-white bg-blue-600 rounded-full hover:bg-blue-700 transition-colors duration-200`}
+            >
+              <Edit size={24} />
+            </button>
+            <button
+              onClick={(e) => {
+                e.stopPropagation();
+                setIsDeleting(true);
+              }}
+              className={`p-2 text-white bg-red-600 rounded-full hover:bg-red-700 transition-colors duration-200`}
+            >
+              <Trash size={24} />
+            </button>
+          </div>
+        )}
       </motion.div>
+
+      {/* Modals for editing and deleting */}
       <div className="drag-handle">
         {isEditing && (
           <EditNote
@@ -183,4 +229,3 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     </>
   );
 };
-

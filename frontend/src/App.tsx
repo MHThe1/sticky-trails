@@ -13,6 +13,7 @@ import Register from "./pages/Register";
 import { Navbar } from "./components/Navbar";
 import { Dashboard } from "./pages/Dashboard";
 import { ProfileEdit } from "./pages/ProfileEdit";
+import Footer from "./components/Footer";
 
 const App: React.FC = () => {
   const { user } = useAuthContext();
@@ -44,6 +45,7 @@ const App: React.FC = () => {
               element={user ? <ProfileEdit /> : <Navigate to="/login" />}
             />
           </Routes>
+          <Footer />
         </div>
       </Router>
     </ThemeProvider>

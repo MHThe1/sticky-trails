@@ -9,24 +9,24 @@ interface AddNoteWindowProps {
 const colorConfig: Record<string, { bg: string; inpbg: string; text: string }> =
   {
     yellow: {
-      bg: "bg-yellow-400",
+      bg: "bg-yellow-500",
       inpbg: "bg-yellow-300",
       text: "text-gray-900",
     },
-    green: { bg: "bg-green-400", inpbg: "bg-green-300", text: "text-gray-900" },
-    blue: { bg: "bg-blue-400", inpbg: "bg-blue-300", text: "text-gray-100" },
-    pink: { bg: "bg-pink-400", inpbg: "bg-pink-300", text: "text-gray-100" },
+    green: { bg: "bg-green-500", inpbg: "bg-green-300", text: "text-gray-900" },
+    blue: { bg: "bg-blue-500", inpbg: "bg-blue-300", text: "text-gray-100" },
+    pink: { bg: "bg-pink-500", inpbg: "bg-pink-300", text: "text-gray-100" },
     purple: {
-      bg: "bg-purple-400",
+      bg: "bg-purple-500",
       inpbg: "bg-purple-300",
       text: "text-gray-100",
     },
     indigo: {
-      bg: "bg-indigo-400",
+      bg: "bg-indigo-500",
       inpbg: "bg-indigo-300",
       text: "text-gray-100",
     },
-    red: { bg: "bg-red-400", inpbg: "bg-red-300", text: "text-gray-100" },
+    red: { bg: "bg-red-500", inpbg: "bg-red-300", text: "text-gray-100" },
   };
 
 export const AddNoteWindow: React.FC<AddNoteWindowProps> = ({ onAddNote }) => {
@@ -49,7 +49,7 @@ export const AddNoteWindow: React.FC<AddNoteWindowProps> = ({ onAddNote }) => {
   return (
     <>
       <motion.div
-        className="fixed bottom-8 right-8 w-16 h-16 bg-yellow-400 rounded-lg shadow-lg cursor-pointer overflow-hidden"
+        className="fixed bottom-8 right-8 w-16 h-16 bg-yellow-500 rounded-lg shadow-lg cursor-pointer overflow-hidden"
         whileHover={{ scale: 1.1 }}
         whileTap={{ scale: 0.9 }}
         onClick={() => setIsModalOpen(true)}

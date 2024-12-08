@@ -9,13 +9,13 @@ interface Note {
 }
 
 const colorConfig: Record<string, { bg: string; inpbg: string; text: string }> = {
-  yellow: { bg: "bg-yellow-400", inpbg: "bg-yellow-300", text: "text-gray-900" },
-  green: { bg: "bg-green-400", inpbg: "bg-green-300", text: "text-gray-900" },
-  blue: { bg: "bg-blue-400", inpbg: "bg-blue-300", text: "text-gray-900" },
-  pink: { bg: "bg-pink-400", inpbg: "bg-pink-300", text: "text-gray-900" },
-  purple: { bg: "bg-purple-400", inpbg: "bg-purple-300", text: "text-gray-900" },
-  indigo: { bg: "bg-indigo-400", inpbg: "bg-indigo-300", text: "text-gray-900" },
-  red: { bg: "bg-red-400", inpbg: "bg-red-300", text: "text-gray-900" },
+  yellow: { bg: "bg-yellow-500", inpbg: "bg-yellow-300", text: "text-gray-900" },
+  green: { bg: "bg-green-500", inpbg: "bg-green-300", text: "text-gray-900" },
+  blue: { bg: "bg-blue-500", inpbg: "bg-blue-300", text: "text-gray-900" },
+  pink: { bg: "bg-pink-500", inpbg: "bg-pink-300", text: "text-gray-900" },
+  purple: { bg: "bg-purple-500", inpbg: "bg-purple-300", text: "text-gray-900" },
+  indigo: { bg: "bg-indigo-500", inpbg: "bg-indigo-300", text: "text-gray-900" },
+  red: { bg: "bg-red-500", inpbg: "bg-red-300", text: "text-gray-900" },
 };
 
 interface EditNoteProps {
