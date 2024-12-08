@@ -19,6 +19,10 @@ const noteSchema = new mongoose.Schema(
       required: true,
       default: 0, // Temporary default, will be overridden in the middleware
     },
+    user_id: {
+      type: String,
+      required: true,
+    },
   },
   {
     timestamps: true, // adds createdAt and updatedAt fields
@@ -30,7 +34,7 @@ noteSchema.pre("validate", async function (next) {
   if (this.isNew && this.priority === 0) { // Only run for new documents with unset priority
     try {
       const noteCount = await mongoose.model("Note").countDocuments();
-      this.priority = 100 + noteCount;
+      this.priority = noteCount + 1;
       next();
     } catch (error) {
       next(error);

@@ -2,8 +2,9 @@ import mongoose from "mongoose";
 import Note from '../models/notes.model.mjs';
 
 export const getNotes = async (req, res) => {
+    const user_id = req.user._id;
     try {
-      const notes = await Note.find();
+      const notes = await Note.find({user_id});
       res.status(200).json({success: true, data: notes});
     } catch (error) {
       console.error("Error fetching notes:", error.message);
@@ -21,6 +22,11 @@ export const postNote = async (req, res) => {
     const newNote = new Note(note);
   
     try {
+      const user_id = req.user._id;
+      const newNote = new Note({
+        ...note, // Spread the request body
+        user_id, // Add the user_id explicitly
+      });
       await newNote.save();
       res.status(201).json({success: true, data: newNote});
     } catch (error) {
