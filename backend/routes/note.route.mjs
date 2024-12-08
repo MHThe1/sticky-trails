@@ -1,7 +1,11 @@
 import express from "express";
 import { deleteNote, getNotes, postNote, updateNote } from "../controllers/note.controller.mjs";
+import { requireAuth } from "../middleware/requireauth.mjs";
 
 const router = express.Router();
+
+// require authentication
+router.use(requireAuth);
 
 router.get("/", getNotes);
 

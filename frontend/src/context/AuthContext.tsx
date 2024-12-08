@@ -1,13 +1,17 @@
 import { createContext, useContext, useEffect, useReducer, ReactNode, Dispatch } from "react";
 
+interface User {
+  token: string;
+}
+
 // Define the shape of the state
 interface AuthState {
-  user: string | null;
+  user: User | null;
 }
 
 // Define the possible action types
 type AuthAction =
-  | { type: "LOGIN"; payload: string }
+  | { type: "LOGIN"; payload: User }
   | { type: "LOGOUT" };
 
 // Create the context type

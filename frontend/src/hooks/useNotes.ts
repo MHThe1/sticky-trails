@@ -1,53 +1,101 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import axios from "axios";
 
-export interface Note {
+interface User {
+  token: string;
+}
+
+interface Note {
   _id: string;
   title: string;
   content: string;
+  color: string;
   priority: number;
+  createdAt: string;
 }
 
-export function useNotes() {
+interface NewNote {
+  title: string;
+  content: string;
+  color: string;
+}
+
+export const useNotes = (user: User | null) => {
   const [notes, setNotes] = useState<Note[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
-    fetchNotes();
-  }, []);
+    if (user) fetchNotes();
+  }, [user]);
+
+  const getHeaders = () => ({
+    headers: { Authorization: `Bearer ${user?.token}` },
+  });
 
   const fetchNotes = async () => {
     try {
-      const response = await fetch('/api/notes');
-      const data = await response.json();
-      if (data.success) {
-        setNotes(data.data.sort((a: Note, b: Note) => b.priority - a.priority));
-      }
+      const response = await axios.get<{ data: Note[] }>("/api/notes", getHeaders());
+      setNotes(response.data.data.sort((a, b) => a.priority - b.priority));
     } catch (error) {
-      console.error('Error fetching notes:', error);
+      console.error("Error fetching notes:", error);
+    } finally {
+      setLoading(false);
     }
   };
 
-  const updateNotePriority = async (id: string, newPriority: number) => {
+  const addNote = async (newNote: NewNote) => {
     try {
-      const response = await fetch(`/api/notes/${id}`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ priority: newPriority }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setNotes(prevNotes => 
-          prevNotes.map(note => 
-            note._id === id ? { ...note, priority: newPriority } : note
-          ).sort((a, b) => b.priority - a.priority)
-        );
-      }
+      const response = await axios.post<{ data: Note }>("/api/notes", newNote, getHeaders());
+      setNotes((prevNotes) => [...prevNotes, response.data.data]);
     } catch (error) {
-      console.error('Error updating note priority:', error);
+      console.error("Error adding note:", error);
     }
   };
 
-  return { notes, updateNotePriority };
-}
+  const editNote = async (id: string, updates: Partial<Note>) => {
+    try {
+      const response = await axios.put<{ data: Note }>(`/api/notes/${id}`, updates, getHeaders());
+      setNotes((prevNotes) =>
+        prevNotes.map((note) => (note._id === id ? response.data.data : note))
+      );
+    } catch (error) {
+      console.error(`Error editing note with ID ${id}:`, error);
+    }
+  };
 
+  const deleteNote = async (id: string) => {
+    try {
+      await axios.delete(`/api/notes/${id}`, getHeaders());
+      setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
+    } catch (error) {
+      console.error(`Error deleting note with ID ${id}:`, error);
+    }
+  };
+
+  const updateNotePriorities = async (newNotes: Note[]) => {
+    const updatedNotes = newNotes.map((note, index) => ({
+      ...note,
+      priority: index,
+    }));
+
+    try {
+      await Promise.all(
+        updatedNotes.map((note) =>
+          axios.put(`/api/notes/${note._id}`, { priority: note.priority }, getHeaders())
+        )
+      );
+      setNotes(updatedNotes);
+    } catch (error) {
+      console.error("Error updating note priorities:", error);
+    }
+  };
+
+  return {
+    notes,
+    loading,
+    addNote,
+    editNote,
+    deleteNote,
+    updateNotePriorities,
+  };
+};
