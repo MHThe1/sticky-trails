@@ -44,7 +44,7 @@ export const EditNote: React.FC<EditNoteProps> = ({ note, onEdit, onClose }) => 
       exit={{ opacity: 0 }}
     >
       <motion.div
-        className={`${bg} rounded-lg p-6 w-full max-w-sm`} // Reduced the width of the modal
+        className={`${bg} rounded-lg p-6 w-full max-w-sm`}
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         exit={{ scale: 0.9, opacity: 0 }}
@@ -79,7 +79,7 @@ export const EditNote: React.FC<EditNoteProps> = ({ note, onEdit, onClose }) => 
                     key={colorKey}
                     type="button"
                     onClick={() => setColor(colorKey)}
-                    className={`w-8 h-8 rounded-full ${circleBg} border-2 ${color === colorKey ? "border-indigo-900" : "border-gray-50"}`} // Added a more visible stroke
+                    className={`w-8 h-8 rounded-full ${circleBg} border-2 ${color === colorKey ? "border-indigo-900" : "border-gray-50"}`}
                   />
                 );
               })}
@@ -105,3 +105,4 @@ export const EditNote: React.FC<EditNoteProps> = ({ note, onEdit, onClose }) => 
     </motion.div>
   );
 };
+

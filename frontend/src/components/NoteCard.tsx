@@ -1,17 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { motion } from "framer-motion";
-import {
-  LucideIcon,
-  AlertCircle,
-  Book,
-  Briefcase,
-  Calendar,
-  Music,
-  Star,
-  Clock,
-  Edit,
-  Trash,
-} from "lucide-react";
+import { type LucideIcon, AlertCircle, Book, Briefcase, Calendar, Music, Star, Clock, Edit, Trash } from 'lucide-react';
 import { EditNote } from "./EditNote";
 import { DeleteConfirmation } from "./DeleteConfirmation";
 
@@ -194,3 +183,4 @@ export const NoteCard: React.FC<NoteCardProps> = ({
     </>
   );
 };
+

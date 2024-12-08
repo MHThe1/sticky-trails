@@ -92,6 +92,7 @@ export const useNotes = (user: User | null) => {
 
   return {
     notes,
+    setNotes,
     loading,
     addNote,
     editNote,

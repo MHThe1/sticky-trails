@@ -33,3 +33,39 @@ export const registerUser = async (req, res) => {
     }
 }
 
+export const getUserByUsername = async (req, res) => {
+    const { username } = req.params;
+
+    try {
+        const user = await User.findOne({ username }).select('-password'); // Exclude password for security
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json(user);
+    } catch (error) {
+        res.status(500).json({ error: 'An error occurred while fetching user data' });
+    }
+};
+
+
+export const updateUserByUsername = async (req, res) => {
+    const { username } = req.params;
+    const { name, avatarUrl } = req.body;
+
+    try {
+        const user = await User.findOneAndUpdate(
+            { username },
+            { name, avatarUrl },
+            { new: true, runValidators: true }
+        ).select('-password'); // Ensure password is not returned
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+        res.status(200).json({ message: 'Profile updated successfully', name: user.name, avatarUrl: user.avatarUrl });
+    } catch (error) {
+        console.error('Error updating user:', error);
+        res.status(500).json({ error: 'An error occurred while updating user data' });
+    }
+};
+

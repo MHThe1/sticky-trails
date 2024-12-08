@@ -1,6 +1,8 @@
 import { createContext, useContext, useEffect, useReducer, ReactNode, Dispatch } from "react";
 
 interface User {
+  username: string;
+  email: string;
   token: string;
 }
 
