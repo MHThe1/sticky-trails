@@ -10,7 +10,6 @@ import {
 import { useNotes } from "../hooks/useNotes";
 import { useAuthContext } from "../hooks/useAuthContext";
 import { Grid, List, Filter } from "lucide-react";
-import { set } from "mongoose";
 
 const colorOptions = [
   { name: "All", value: "" },
@@ -28,7 +27,6 @@ export const HomePage: React.FC = () => {
   const {
     notes,
     setNotes,
-    loading,
     addNote,
     editNote,
     deleteNote,
@@ -46,6 +44,7 @@ export const HomePage: React.FC = () => {
     const nextNotes = swap(notes, sourceIndex, targetIndex);
     setNotes(nextNotes);
     updateNotePriorities(nextNotes);
+    console.log(sourceId)
   };
 
   useEffect(() => {
