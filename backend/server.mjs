@@ -1,4 +1,5 @@
 import express from "express";
+import cors from 'cors';
 import dotenv from "dotenv";
 import path from "path";
 import { fileURLToPath } from "url"; // Needed for __dirname in ES modules
@@ -14,6 +15,21 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+const allowedOrigins = process.env.ALLOWED_ORIGINS.split(',');
+// Configure CORS options
+const corsOptions = {
+  origin: (origin, callback) => {
+    if (!origin || allowedOrigins.includes(origin)) {
+      // Allow requests with no origin (e.g., mobile apps, Postman) or a valid origin
+      callback(null, true);
+    } else {
+      callback(new Error(`Origin ${origin} not allowed by CORS`));
+    }
+  },
+};
+
+// Apply CORS middleware
+app.use(cors(corsOptions));
 
 // Middleware to parse JSON request bodies
 app.use(express.json());

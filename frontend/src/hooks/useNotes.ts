@@ -34,7 +34,7 @@ export const useNotes = (user: User | null) => {
 
   const fetchNotes = async () => {
     try {
-      const response = await axios.get<{ data: Note[] }>("/api/notes", getHeaders());
+      const response = await axios.get<{ data: Note[] }>(`${import.meta.env.VITE_API_BASE_URL}/api/notes`, getHeaders());
       setNotes(response.data.data.sort((a, b) => a.priority - b.priority));
     } catch (error) {
       console.error("Error fetching notes:", error);
@@ -45,7 +45,7 @@ export const useNotes = (user: User | null) => {
 
   const addNote = async (newNote: NewNote) => {
     try {
-      const response = await axios.post<{ data: Note }>("/api/notes", newNote, getHeaders());
+      const response = await axios.post<{ data: Note }>(`${import.meta.env.VITE_API_BASE_URL}/api/notes`, newNote, getHeaders());
       setNotes((prevNotes) => [...prevNotes, response.data.data]);
     } catch (error) {
       console.error("Error adding note:", error);
@@ -54,7 +54,7 @@ export const useNotes = (user: User | null) => {
 
   const editNote = async (id: string, updates: Partial<Note>) => {
     try {
-      const response = await axios.put<{ data: Note }>(`/api/notes/${id}`, updates, getHeaders());
+      const response = await axios.put<{ data: Note }>(`${import.meta.env.VITE_API_BASE_URL}/api/notes/${id}`, updates, getHeaders());
       setNotes((prevNotes) =>
         prevNotes.map((note) => (note._id === id ? response.data.data : note))
       );
@@ -65,7 +65,7 @@ export const useNotes = (user: User | null) => {
 
   const deleteNote = async (id: string) => {
     try {
-      await axios.delete(`/api/notes/${id}`, getHeaders());
+      await axios.delete(`${import.meta.env.VITE_API_BASE_URL}/api/notes/${id}`, getHeaders());
       setNotes((prevNotes) => prevNotes.filter((note) => note._id !== id));
     } catch (error) {
       console.error(`Error deleting note with ID ${id}:`, error);
@@ -81,7 +81,7 @@ export const useNotes = (user: User | null) => {
     try {
       await Promise.all(
         updatedNotes.map((note) =>
-          axios.put(`/api/notes/${note._id}`, { priority: note.priority }, getHeaders())
+          axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/notes/${note._id}`, { priority: note.priority }, getHeaders())
         )
       );
       setNotes(updatedNotes);
