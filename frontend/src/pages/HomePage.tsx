@@ -83,26 +83,8 @@ export const HomePage: React.FC = () => {
   const { user } = useAuthContext()
   const { notes, setNotes, addNote, editNote, deleteNote, updateNotePriorities } = useNotes(user)
   const [isGridView, setIsGridView] = useState<boolean>(true)
-  const [boxesPerRow, setBoxesPerRow] = useState<number>(4)
   const [selectedColor, setSelectedColor] = useState<string>("")
   const [instanceId] = useState(getInstanceId)
-
-  useEffect(() => {
-    const handleResize = () => {
-      if (window.innerWidth < 640) {
-        setBoxesPerRow(1)
-      } else if (window.innerWidth < 768) {
-        setBoxesPerRow(2)
-      } else if (window.innerWidth < 1024) {
-        setBoxesPerRow(3)
-      } else {
-        setBoxesPerRow(4)
-      }
-    }
-    handleResize()
-    window.addEventListener("resize", handleResize)
-    return () => window.removeEventListener("resize", handleResize)
-  }, [])
 
   const filteredNotes = selectedColor ? notes.filter((note) => note.color === selectedColor) : notes
 
@@ -181,9 +163,9 @@ export const HomePage: React.FC = () => {
 
           {/* Notes Grid */}
           <div
-            className={`grid gap-4 mx-auto ${
+            className={`grid gap-x-5 gap-y-10 mx-auto ${
               isGridView
-                ? `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-${boxesPerRow}`
+                ? `grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-3 2xl:grid-cols-4`
                 : "grid-cols-1"
             }`}
           >

@@ -12,6 +12,7 @@
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^1.4.0",
     "@types/react-router": "^5.1.20",
+    "axios": "^1.7.9",
     "framer-motion": "^11.11.17",
     "lucide-react": "^0.462.0",
     "react": "^18.3.1",
@@ -23,7 +24,7 @@
     "@eslint/js": "^9.15.0",
     "@types/axios": "^0.14.4",
     "@types/react": "^18.3.12",
-    "@types/react-dom": "^18.3.1",
+    "@types/react-dom": "^18.3.2",
     "@vitejs/plugin-react": "^4.3.4",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.15.0",

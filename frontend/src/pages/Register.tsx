@@ -21,7 +21,7 @@ const Register: React.FC = () => {
   };
 
   return (
-    <div className="flex items-center justify-center min-h-screen">
+    <div className="container flex items-center justify-center mx-auto px-4 py-8">
       <div className="bg-white dark:bg-gray-900 p-8 rounded-lg shadow-xl w-full max-w-md">
         <h1 className="text-3xl font-bold mb-6 text-center text-purple-600 dark:text-purple-400">
           Join Sticky Trail

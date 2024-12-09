@@ -21,30 +21,32 @@ const App: React.FC = () => {
   return (
     <ThemeProvider>
       <Router>
-        <div className="min-h-screen transition-colors duration-200 bg-gradient-to-br from-gray-100 via-blue-200 to-blue-400 dark:from-gray-900 dark:via-purple-900 dark:to-violet-600">
+        <div className="flex flex-col min-h-screen transition-colors duration-200 bg-gradient-to-br from-gray-100 via-blue-200 to-blue-400 dark:from-gray-900 dark:via-purple-900 dark:to-violet-600">
           <Navbar />
-          <Routes>
-            <Route
-              path="/"
-              element={user ? <HomePage /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/login"
-              element={!user ? <Login /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/register"
-              element={!user ? <Register /> : <Navigate to="/" />}
-            />
-            <Route
-              path="/dashboard"
-              element={user ? <Dashboard /> : <Navigate to="/login" />}
-            />
-            <Route
-              path="/profile/edit"
-              element={user ? <ProfileEdit /> : <Navigate to="/login" />}
-            />
-          </Routes>
+          <div className="flex-grow">
+            <Routes>
+              <Route
+                path="/"
+                element={user ? <HomePage /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/login"
+                element={!user ? <Login /> : <Navigate to="/" />}
+              />
+              <Route
+                path="/register"
+                element={!user ? <Register /> : <Navigate to="/" />}
+              />
+              <Route
+                path="/dashboard"
+                element={user ? <Dashboard /> : <Navigate to="/login" />}
+              />
+              <Route
+                path="/profile/edit"
+                element={user ? <ProfileEdit /> : <Navigate to="/login" />}
+              />
+            </Routes>
+          </div>
           <Footer />
         </div>
       </Router>
