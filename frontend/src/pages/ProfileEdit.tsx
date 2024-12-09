@@ -20,7 +20,7 @@ export const ProfileEdit: React.FC = () => {
         return;
       }
       try {
-        const response = await axios.get(`/api/user/${user.username}`);
+        const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/user/${user.username}`);
         setProfileData({
           name: response.data.name || '',
           avatarUrl: response.data.avatarUrl || '',
@@ -41,7 +41,7 @@ export const ProfileEdit: React.FC = () => {
 
     try {
       if (user) {
-      await axios.put(`/api/user/${user.username}`, profileData);
+      await axios.put(`${import.meta.env.VITE_API_BASE_URL}/api/user/${user.username}`, profileData);
       navigate('/dashboard');
       }
     } catch (err) {

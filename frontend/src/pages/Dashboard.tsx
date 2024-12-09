@@ -55,7 +55,7 @@ export const Dashboard: React.FC = () => {
 
       try {
         const response = await axios.get<UserData>(
-          `/api/user/${user.username}`
+          `${import.meta.env.VITE_API_BASE_URL}/api/user/${user.username}`
         );
         setUserData(response.data);
         setLoading(false);
