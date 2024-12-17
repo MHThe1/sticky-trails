@@ -1,5 +1,6 @@
 import User from '../models/users.model.mjs';
 import jwt from 'jsonwebtoken';
+import upload from '../middleware/upload.mjs';
 
 
 const createToken = (_id) => {
@@ -49,23 +50,41 @@ export const getUserByUsername = async (req, res) => {
 
 
 export const updateUserByUsername = async (req, res) => {
-    const { username } = req.params;
-    const { name, avatarUrl } = req.body;
+  const { username } = req.params;
+  const { name } = req.body;
+
+  // Multer middleware for file uploads
+  upload.single("avatar")(req, res, async function (err) {
+    if (err) {
+      return res.status(400).json({ error: err.message });
+    }
 
     try {
-        const user = await User.findOneAndUpdate(
-            { username },
-            { name, avatarUrl },
-            { new: true, runValidators: true }
-        ).select('-password'); // Ensure password is not returned
+      const updateFields = { name };
+      if (req.file) {
+        const avatarUrl = `/uploads/${req.file.filename}`;
+        updateFields.avatarUrl = avatarUrl;
+      }
 
-        if (!user) {
-            return res.status(404).json({ error: 'User not found' });
-        }
-        res.status(200).json({ message: 'Profile updated successfully', name: user.name, avatarUrl: user.avatarUrl });
+      const user = await User.findOneAndUpdate(
+        { username },
+        updateFields,
+        { new: true, runValidators: true }
+      ).select("-password");
+
+      if (!user) {
+        return res.status(404).json({ error: "User not found" });
+      }
+
+      res.status(200).json({
+        message: "Profile updated successfully",
+        name: user.name,
+        avatarUrl: user.avatarUrl,
+      });
     } catch (error) {
-        console.error('Error updating user:', error);
-        res.status(500).json({ error: 'An error occurred while updating user data' });
+      console.error("Error updating user:", error);
+      res.status(500).json({ error: "An error occurred while updating user data" });
     }
+  });
 };
 

@@ -112,7 +112,13 @@ export const Dashboard: React.FC = () => {
           <div className="flex flex-col items-center">
             <div className="w-24 h-24 rounded-full bg-gray-300 dark:bg-gray-600 mb-4 overflow-hidden">
               <img
-                src={userData.avatarUrl || placeholderAvatar}
+                src={
+                  userData.avatarUrl
+                    ? `${import.meta.env.VITE_API_BASE_URL}${
+                        userData.avatarUrl
+                      }`
+                    : placeholderAvatar
+                }
                 alt="User Avatar"
                 className="w-full h-full object-cover"
               />

@@ -34,6 +34,8 @@ app.use(cors(corsOptions));
 // Middleware to parse JSON request bodies
 app.use(express.json());
 
+app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+
 // API routes
 app.use("/api/notes", noteRoute);
 app.use("/api/user", userRoute);
