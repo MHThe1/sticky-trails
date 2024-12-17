@@ -90,7 +90,7 @@ export const ProfileEdit: React.FC = () => {
                   file
                     ? profileData.avatarUrl // Preview newly selected image
                     : profileData.avatarUrl
-                    ? `${import.meta.env.VITE_API_BASE_URL}${
+                    ? `${
                         profileData.avatarUrl
                       }` // Existing image from backend
                     : placeholderAvatar // Default placeholder

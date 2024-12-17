@@ -114,7 +114,7 @@ export const Dashboard: React.FC = () => {
               <img
                 src={
                   userData.avatarUrl
-                    ? `${import.meta.env.VITE_API_BASE_URL}${
+                    ? `${
                         userData.avatarUrl
                       }`
                     : placeholderAvatar
